@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DefaultNamespace
 {
@@ -13,21 +12,20 @@ namespace DefaultNamespace
             Weapon,
             Booster
         }
-        
-        public string Name;
-        public Sprite CurrentSprite;
-        public List<Sprite> IconList;
-        public CellType CurrentCellType;
 
-        public Sprite GetRandomSprite()
+        public enum CellColorType
         {
-            if (IconList != null && IconList.Count > 0)
-            {
-                return IconList[Random.Range(0, IconList.Count)];
-            }
-
-            return null;
+            NoType,
+            Blue,
+            Green,
+            Orange,
+            Pink,
+            Red,
+            Yellow
         }
-
+        
+        public Sprite Icon;
+        public CellType CurrentCellType;
+        public CellColorType CurrentCellColorType;
     }
 }

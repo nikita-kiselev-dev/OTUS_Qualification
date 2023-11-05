@@ -4,13 +4,15 @@ using UnityEngine.UI;
 
 namespace DefaultNamespace
 {
-    public class CellView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
+    public class CellView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Image m_BackGroundImage;
         [SerializeField] private Image m_IconImage;
 
         private CellController _cellController;
         private Vector2Int _cellIndex;
+
+        public Vector2Int CellIndex => _cellIndex;
         
         public void Init(CellController cellController, Vector2Int cellIndex)
         {
@@ -28,19 +30,18 @@ namespace DefaultNamespace
             m_BackGroundImage.sprite = backgroundSprite;
         }
 
-        public Vector2Int GetCellIndex()
-        {
-            return _cellIndex;
-        }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
-            _cellController.OnBeginDrag(eventData);
+            _cellController.OnBeginDrag();
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
             _cellController.OnEndDrag(eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
         }
     }
 }

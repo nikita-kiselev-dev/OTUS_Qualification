@@ -49,7 +49,7 @@ namespace DefaultNamespace
             _cellConfig = cellConfig;
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
+        public void OnBeginDrag()
         {
             _cellView.SetBackground(_cellViewData.SelectedBackgroundSprite);
         }
@@ -61,10 +61,7 @@ namespace DefaultNamespace
             var eventDataGameObject = eventData.pointerCurrentRaycast.gameObject;
             if (eventDataGameObject.TryGetComponent(out CellView cellToSwap))
             {
-                _boardModel.SwapCells(_cellView.GetCellIndex(), _cellView.GetCellIndex());
-                
-                Debug.Log($"first: {_cellView.GetCellIndex()}");
-                Debug.Log($"second: {cellToSwap.GetCellIndex()}");
+                _boardModel.SwapCells(_cellView.CellIndex, cellToSwap.CellIndex);
             }
         }
 
@@ -81,8 +78,13 @@ namespace DefaultNamespace
         private void ConfigureView()
         {
             _cellView.Init(this, _cellIndex);
-            _cellView.SetIcon(_cellData.GetRandomSprite());
             _cellView.name = _cellConfig.CellName;
+            UpdateView();
+        }
+
+        public void UpdateView()
+        {
+            _cellView.SetIcon(_cellData.Icon);
         }
 
         private void CreateView()

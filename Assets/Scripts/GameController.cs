@@ -5,13 +5,17 @@ namespace DefaultNamespace
 {
     public class GameController : MonoBehaviour
     {
+        [SerializeField] private int m_RowsNumber = 8;
+        [SerializeField] private int m_CellsNumber = 11;
+        [Space]
         [SerializeField] private GameObject m_RowPrefab;
         [SerializeField] private GameObject m_CellPrefab;
-        
+        [Space]
         [SerializeField] private RectTransform m_RowsContainer;
         [SerializeField] private Canvas m_MainCanvas;
-        
-        [SerializeField] private CellData m_CommonCellData;
+        [Space]
+        [SerializeField] private List<CellData> m_CellDatas;
+        [SerializeField] private CellData m_CellEmptyData;
         [SerializeField] private CellViewData m_CellViewData;
 
         private List<RectTransform> _rows;
@@ -24,18 +28,22 @@ namespace DefaultNamespace
             
             _boardModel = new BoardModel(
                 m_CellPrefab,
+                m_CellEmptyData,
                 m_CellViewData,
                 m_MainCanvas,
                 _rows);
             
-            _boardModel.CreateCellMatrix(5,5,m_CommonCellData);
+            _boardModel.CreateCellMatrix(
+                m_RowsNumber,
+                m_CellsNumber,
+                m_CellDatas);
         }
         
-        public void BuildBoard(int rowsCounter = 5)
+        public void BuildBoard()
         {
             _rows = new List<RectTransform>();
 
-            for (int i = 0; i < rowsCounter; i++)
+            for (int i = 0; i < m_RowsNumber; i++)
             {
                 var row = Instantiate(m_RowPrefab, m_RowsContainer);
                 row.name = $"Row [{i}]";

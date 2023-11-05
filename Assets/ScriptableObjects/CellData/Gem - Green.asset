@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39f3a6f359b144d28ab32cda9a8e5527, type: 3}
-  m_Name: Axe
+  m_Name: Gem - Green
   m_EditorClassIdentifier: 
-  Name: 
-  CurrentSprite: {fileID: 0}
-  IconList: []
-  CurrentCellType: 0
+  Name: GemGreen
+  Icon: {fileID: 21300000, guid: d952597ed7bbc344fbf5a18e1b86e004, type: 3}
+  CurrentCellType: 1
+  CurrentCellColorType: 2
