@@ -10,20 +10,17 @@ namespace DefaultNamespace
         private GameObject _cellPrefab;
         private CellData _cellEmptyData;
         private CellViewData _cellViewData;
-        private Canvas _mainCanvas;
         private List<RectTransform> _rows;
 
         public BoardModel(
             GameObject cellPrefab,
             CellData cellEmptyData,
             CellViewData cellViewData,
-            Canvas mainCanvas,
             List<RectTransform> rows)
         {
             _cellPrefab = cellPrefab;
             _cellEmptyData = cellEmptyData;
             _cellViewData = cellViewData;
-            _mainCanvas = mainCanvas;
             _rows = rows;
         }
         
@@ -46,7 +43,6 @@ namespace DefaultNamespace
                         _cellPrefab,
                         randomCellData,
                         _cellViewData,
-                        _mainCanvas,
                         _rows[rowNumber]);
                     
                     CellConfig cellConfig = new CellConfig($"Cell [{rowNumber}, {cellNumber}]");
@@ -76,7 +72,6 @@ namespace DefaultNamespace
                 var firstCellTempData = firstCell.GetCellData();
                 firstCell.SetCellData(secondCell.GetCellData());
                 secondCell.SetCellData(firstCellTempData);
-                secondCell.SetCellData(_cellEmptyData);
             
                 UpdateBoardView();
                 

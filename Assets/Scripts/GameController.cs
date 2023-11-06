@@ -12,7 +12,6 @@ namespace DefaultNamespace
         [SerializeField] private GameObject m_CellPrefab;
         [Space]
         [SerializeField] private RectTransform m_RowsContainer;
-        [SerializeField] private Canvas m_MainCanvas;
         [Space]
         [SerializeField] private List<CellData> m_CellDatas;
         [SerializeField] private CellData m_CellEmptyData;
@@ -30,7 +29,6 @@ namespace DefaultNamespace
                 m_CellPrefab,
                 m_CellEmptyData,
                 m_CellViewData,
-                m_MainCanvas,
                 _rows);
             
             _boardModel.CreateCellMatrix(

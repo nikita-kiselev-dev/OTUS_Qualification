@@ -11,7 +11,6 @@ namespace DefaultNamespace
         private GameObject _cellPrefab;
         private CellData _cellData;
         private CellViewData _cellViewData;
-        private Canvas _rootCanvas;
         private RectTransform _parent;
 
         private CellConfig _cellConfig;
@@ -26,7 +25,6 @@ namespace DefaultNamespace
             GameObject cellPrefab,
             CellData cellData,
             CellViewData cellViewData,
-            Canvas rootCanvas,
             RectTransform parent)
         {
             _boardModel = boardModel;
@@ -34,7 +32,6 @@ namespace DefaultNamespace
             _cellPrefab = cellPrefab;
             _cellData = cellData;
             _cellViewData = cellViewData;
-            _rootCanvas = rootCanvas;
             _parent = parent;
         }
 
