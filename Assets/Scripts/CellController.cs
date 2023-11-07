@@ -72,6 +72,12 @@ namespace DefaultNamespace
             return _cellData;
         }
 
+        public bool CompareCellData(CellData cellData)
+        {
+            var isSameCellData = cellData == GetCellData();
+            return isSameCellData;
+        }
+
         private void ConfigureView()
         {
             _cellView.Init(this, _cellIndex);

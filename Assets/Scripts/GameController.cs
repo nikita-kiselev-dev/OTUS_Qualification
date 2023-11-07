@@ -19,7 +19,6 @@ namespace DefaultNamespace
 
         private List<RectTransform> _rows;
         private BoardModel _boardModel;
-        private CellController[,] m_Cells;
 
         private void Start()
         {

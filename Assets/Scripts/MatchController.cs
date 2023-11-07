@@ -5,76 +5,115 @@ namespace DefaultNamespace
 {
     public class MatchController
     {
-        //private List<CellController> _
-        
         private CellController[,] _cells;
-
-        private List<CellData> _cellMatchList;
+        private CellData _cellEmptyData;
         
-        private const string HorizontalAxis = "horizontal";
-        private const string VerticalAxis = "vertical";
+        private List<CellData> _cellMatchList;
+        private List<CellController> _horizontalCellMatchList;
+        private List<CellController> _verticalCellMatchList;
+        
         private const int MinCellsToMatch = 3;
 
-        public MatchController(CellController[,] cells)
+        public MatchController(CellController[,] cells, CellData cellEmptyData)
         {
             _cells = cells;
+            _cellEmptyData = cellEmptyData;
         }
 
-        public void FindMatch()
+        public void FindMatch(int rowNumber, int cellNumber)
         {
-            do
+            if (IsNextCellsMatches(rowNumber, cellNumber))
             {
-                for (int rowNumber = 0; rowNumber < _cells.GetLength(0); rowNumber++)
-                {
-                    for (int cellNumber = 0; cellNumber < _cells.GetLength(1); cellNumber++)
-                    {
-                        var horizontalCellsMatches = IsNextCellsMatches(rowNumber, cellNumber, HorizontalAxis);
-                        var verticalCellsMatches = IsNextCellsMatches(rowNumber, cellNumber, VerticalAxis);
-
-                        if (horizontalCellsMatches || verticalCellsMatches)
-                        {
-                            Debug.Log("Match!");
-                        }
-                    }
-                }
-            } while (true);
+                Debug.Log("Match!");
+            }
         }
 
-        public bool IsNextCellsMatches(int rowNumber, int cellNumber, string axis)
+        public bool IsNextCellsMatches(int rowNumber, int cellNumber)
         {
             var currentCellData = _cells[rowNumber, cellNumber].GetCellData();
-            _cellMatchList.Add(currentCellData);
+            var currentCellController = _cells[rowNumber, cellNumber];
             
-            if (axis == HorizontalAxis)
-            {
-                for (int i = 0; i < _cells.GetLength(0); i++)
-                {
-                    var nextCellData = _cells[rowNumber + 1, cellNumber].GetCellData();
-                    if (currentCellData == nextCellData)
-                    {
-                        _cellMatchList.Add(nextCellData);
-                    }
-                }
+            _cellMatchList = new List<CellData>();
+            _horizontalCellMatchList = new List<CellController>();
+            _verticalCellMatchList = new List<CellController>();
+            
+            _horizontalCellMatchList.Add(_cells[rowNumber, cellNumber]);
+            _verticalCellMatchList.Add(_cells[rowNumber, cellNumber]);
 
-                if (_cellMatchList.Count >= MinCellsToMatch)
+            for (int i = rowNumber - 1; i > 1; i--)
+            {
+                var nextCellData = _cells[i, cellNumber].GetCellData();
+                var nextCellController = _cells[i, cellNumber];
+                if (currentCellController.CompareCellData(nextCellData))
                 {
-                    foreach (var matchedCell in _cellMatchList)
-                    {
-                        
-                    }
+                    _horizontalCellMatchList.Add(nextCellController);
+                }
+                else
+                {
+                    break;
                 }
             }
-            else if (axis == VerticalAxis)
+            
+            for (int i = rowNumber + 1; i < _cells.GetLength(0); i++)
             {
-                var nextCellData = _cells[rowNumber, cellNumber + 1].GetCellData();
+                var nextCellData = _cells[i, cellNumber].GetCellData();
+                var nextCellController = _cells[i, cellNumber];
+                if (currentCellController.CompareCellData(nextCellData))
+                {
+                    _horizontalCellMatchList.Add(nextCellController);
+                }
+                else
+                {
+                    break;
+                }
             }
-            else
+
+            if (_horizontalCellMatchList.Count >= MinCellsToMatch)
             {
-                Debug.Log("MatchController: Wrong Axis!");
+                for (int i = 0; i < _horizontalCellMatchList.Count; i++)
+                {
+                    _horizontalCellMatchList[i].SetCellData(_cellEmptyData);
+                }
             }
             
-            _cellMatchList.Clear();
+            for (int i = cellNumber - 1; i > 1; i--)
+            {
+                var nextCellData = _cells[rowNumber, i].GetCellData();
+                var nextCellController = _cells[rowNumber, i];
+                if (currentCellController.CompareCellData(nextCellData))
+                {
+                    _horizontalCellMatchList.Add(nextCellController);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            for (int i = cellNumber + 1; i < _cells.GetLength(1); i++)
+            {
+                var nextCellData = _cells[rowNumber, i].GetCellData();
+                var nextCellController = _cells[rowNumber, i];
+                if (currentCellController.CompareCellData(nextCellData))
+                {
+                    _horizontalCellMatchList.Add(nextCellController);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            if (_verticalCellMatchList.Count >= MinCellsToMatch)
+            {
+                for (int i = 0; i < _verticalCellMatchList.Count; i++)
+                {
+                    _verticalCellMatchList[i].SetCellData(_cellEmptyData);
+                }
+            }
+            
             return false;
         }
+        
     }
 }
