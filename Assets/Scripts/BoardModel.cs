@@ -59,18 +59,29 @@ namespace DefaultNamespace
 
         private void CreateBoardControllers()
         {
-            _swapController = new SwapController(m_Cells);
-            _matchController = new MatchController(m_Cells, _cellEmptyData);
+            _matchController = new MatchController(m_Cells);
+            _matchController.Init();
+            
+            _swapController = new SwapController(m_Cells, _matchController);
         }
 
         public void SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
         {
+            if (m_Cells[firstCellIndex.x, firstCellIndex.y].GetCellData() == _cellEmptyData)
+            {
+                return;
+            }
+            
             bool isSwapped = _swapController.SwapCells(firstCellIndex, secondCellIndex);
             if (isSwapped)
             {
-                UpdateBoardView();
-                _matchController.FindMatch(firstCellIndex.x, firstCellIndex.y);
-                _matchController.FindMatch(secondCellIndex.x, secondCellIndex.y);
+                var cellMatchList = _matchController.GetCellMatchList();
+
+                for (int i = 0; i < cellMatchList.Count; i++)
+                {
+                    cellMatchList[i].SetCellData(_cellEmptyData);
+                }
+                
                 UpdateBoardView();
             }
         }

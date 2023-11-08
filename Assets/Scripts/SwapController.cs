@@ -1,14 +1,17 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 namespace DefaultNamespace
 {
     public class SwapController
     {
         private CellController[,] _cells;
+        private MatchController _matchController;
 
-        public SwapController(CellController[,] cells)
+        public SwapController(CellController[,] cells, MatchController matchController)
         {
             _cells = cells;
+            _matchController = matchController;
         }
         
         public bool SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
@@ -27,10 +30,20 @@ namespace DefaultNamespace
                     Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
                     return false;
                 }
-            
-                var firstCellTempData = firstCell.GetCellData();
-                firstCell.SetCellData(secondCell.GetCellData());
-                secondCell.SetCellData(firstCellTempData);
+                
+                DataSwap(firstCell, secondCell);
+                var firstCellMatch = _matchController.FindMatch(firstCellIndex.x, firstCellIndex.y);
+                var secondCellMatch = _matchController.FindMatch(secondCellIndex.x, secondCellIndex.y);
+                DataSwap(firstCell, secondCell);
+
+                if (!firstCellMatch && !secondCellMatch)
+                {
+                    Debug.Log("BoardModel: Can't swap! Reason: No match found");
+                    Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
+                    return false;
+                }
+                
+                DataSwap(firstCell, secondCell);
 
                 Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: True");
 
@@ -67,6 +80,13 @@ namespace DefaultNamespace
             Debug.Log($"BoardModel: Can't swap! Reason: Horizontally Swappable: {horizontallySwappable} : Vertically Swappable: {verticallySwappable}");
             
             return false;
+        }
+
+        private void DataSwap(CellController firstCell, CellController secondCell)
+        {
+            var firstCellTempData = firstCell.GetCellData();
+            firstCell.SetCellData(secondCell.GetCellData());
+            secondCell.SetCellData(firstCellTempData);
         }
     }
 }

@@ -42,6 +42,7 @@ namespace DefaultNamespace
 
         public void OnDrag(PointerEventData eventData)
         {
+            //Need for OnBeginDrag / OnEndDrag
         }
     }
 }

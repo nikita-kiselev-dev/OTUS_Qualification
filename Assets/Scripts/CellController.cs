@@ -58,7 +58,7 @@ namespace DefaultNamespace
             var eventDataGameObject = eventData.pointerCurrentRaycast.gameObject;
             if (eventDataGameObject.TryGetComponent(out CellView cellToSwap))
             {
-                _boardModel.SwapCells(_cellView.CellIndex, cellToSwap.CellIndex);
+                _boardModel.SwapCells(cellToSwap.CellIndex, _cellView.CellIndex);
             }
         }
 
