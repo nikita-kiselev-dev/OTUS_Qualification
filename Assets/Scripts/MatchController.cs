@@ -41,15 +41,22 @@ namespace DefaultNamespace
             return _cellMatchList;
         }
 
+        public void ClearCellMatchList()
+        {
+            _cellMatchList.Clear();
+        }
+
         public bool IsMatch(int rowNumber, int cellNumber)
         {
             var currentCellController = _cells[rowNumber, cellNumber];
             
-            _cellMatchList.Add(_cells[rowNumber, cellNumber]);
-            /*_horizontalCellMatchList.Add(_cells[rowNumber, cellNumber]);
-            _verticalCellMatchList.Add(_cells[rowNumber, cellNumber]);*/
-            bool horizontalMatch = IsHorizontalMatch(_cellMatchList, currentCellController, rowNumber, cellNumber);
-            bool verticalMatch = IsVerticalMatch(_cellMatchList, currentCellController, rowNumber, cellNumber);
+            _horizontalCellMatchList.Add(_cells[rowNumber, cellNumber]);
+            _verticalCellMatchList.Add(_cells[rowNumber, cellNumber]);
+            bool horizontalMatch = IsHorizontalMatch(currentCellController, rowNumber, cellNumber);
+            bool verticalMatch = IsVerticalMatch(currentCellController, rowNumber, cellNumber);
+
+            _cellMatchList.AddRange(_horizontalCellMatchList);
+            _cellMatchList.AddRange(_verticalCellMatchList);
             
             _horizontalCellMatchList.Clear();
             _verticalCellMatchList.Clear();
@@ -58,7 +65,6 @@ namespace DefaultNamespace
         }
 
         private bool IsHorizontalMatch(
-            List<CellController> axisCellMatchList,
             CellController currentCellController,
             int rowNumber,
             int cellNumber)
@@ -69,7 +75,7 @@ namespace DefaultNamespace
                 var nextCellController = _cells[rowNumber, i];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
-                    axisCellMatchList.Add(nextCellController);
+                    _horizontalCellMatchList.Add(nextCellController);
                 }
                 else
                 {
@@ -77,13 +83,13 @@ namespace DefaultNamespace
                 }
             }
             
-            for (int i = cellNumber + 1; i < _cells.GetLength(0); i++)
+            for (int i = cellNumber + 1; i < _cells.GetLength(1); i++)
             {
                 var nextCellData = _cells[rowNumber, i].GetCellData();
                 var nextCellController = _cells[rowNumber, i];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
-                    axisCellMatchList.Add(nextCellController);
+                    _horizontalCellMatchList.Add(nextCellController);
                 }
                 else
                 {
@@ -91,16 +97,16 @@ namespace DefaultNamespace
                 }
             }
 
-            if (axisCellMatchList.Count >= MinCellsToMatch)
+            if (_horizontalCellMatchList.Count >= MinCellsToMatch)
             {
                 return true;
             }
 
+            _horizontalCellMatchList.Clear();
             return false;
         }
         
         private bool IsVerticalMatch(
-            List<CellController> axisCellMatchList,
             CellController currentCellController,
             int rowNumber,
             int cellNumber)
@@ -111,7 +117,7 @@ namespace DefaultNamespace
                 var nextCellController = _cells[i, cellNumber];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
-                    axisCellMatchList.Add(nextCellController);
+                    _verticalCellMatchList.Add(nextCellController);
                 }
                 else
                 {
@@ -119,13 +125,13 @@ namespace DefaultNamespace
                 }
             }
             
-            for (int i = rowNumber + 1; i < _cells.GetLength(1); i++)
+            for (int i = rowNumber + 1; i < _cells.GetLength(0); i++)
             {
                 var nextCellData = _cells[i, cellNumber].GetCellData();
                 var nextCellController = _cells[i, cellNumber];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
-                    axisCellMatchList.Add(nextCellController);
+                    _verticalCellMatchList.Add(nextCellController);
                 }
                 else
                 {
@@ -133,11 +139,12 @@ namespace DefaultNamespace
                 }
             }
             
-            if (axisCellMatchList.Count >= MinCellsToMatch)
+            if (_verticalCellMatchList.Count >= MinCellsToMatch)
             {
                 return true;
             }
 
+            _verticalCellMatchList.Clear();
             return false;
         }
         

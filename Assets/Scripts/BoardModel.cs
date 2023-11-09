@@ -82,6 +82,8 @@ namespace DefaultNamespace
                     cellMatchList[i].SetCellData(_cellEmptyData);
                 }
                 
+                _matchController.ClearCellMatchList();
+                
                 UpdateBoardView();
             }
         }
