@@ -10,21 +10,24 @@ namespace DefaultNamespace
         private GameObject _cellPrefab;
         private CellData _cellEmptyData;
         private CellViewData _cellViewData;
-        private Canvas _mainCanvas;
         private List<RectTransform> _rows;
+
+        private SwapController _swapController;
+        private MatchController _matchController;
+        private FallController _fallController;
 
         public BoardModel(
             GameObject cellPrefab,
             CellData cellEmptyData,
             CellViewData cellViewData,
-            Canvas mainCanvas,
-            List<RectTransform> rows)
+            List<RectTransform> rows,
+            FallController fallController)
         {
             _cellPrefab = cellPrefab;
             _cellEmptyData = cellEmptyData;
             _cellViewData = cellViewData;
-            _mainCanvas = mainCanvas;
             _rows = rows;
+            _fallController = fallController;
         }
         
         public void CreateCellMatrix(
@@ -46,7 +49,6 @@ namespace DefaultNamespace
                         _cellPrefab,
                         randomCellData,
                         _cellViewData,
-                        _mainCanvas,
                         _rows[rowNumber]);
                     
                     CellConfig cellConfig = new CellConfig($"Cell [{rowNumber}, {cellNumber}]");
@@ -54,65 +56,43 @@ namespace DefaultNamespace
                     m_Cells[rowNumber,cellNumber].Init();
                 }
             }
+
+            CreateBoardControllers();
+        }
+
+        private void CreateBoardControllers()
+        {
+            _matchController = new MatchController(m_Cells);
+            _matchController.Init();
+            
+            _swapController = new SwapController(m_Cells, _matchController);
+
+            _fallController.Init(m_Cells, _cellEmptyData, UpdateBoardView, FindMatchAfterFall);
         }
 
         public void SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
         {
-            if (IsSwappable(firstCellIndex, secondCellIndex))
+            if (m_Cells[firstCellIndex.x, firstCellIndex.y].GetCellData() == _cellEmptyData)
             {
-                var firstCell = m_Cells[firstCellIndex.x, firstCellIndex.y];
-                var firstCellData = firstCell.GetCellData();
+                return;
+            }
             
-                var secondCell = m_Cells[secondCellIndex.x, secondCellIndex.y];
-                var secondCellData = secondCell.GetCellData();
+            bool isSwapped = _swapController.SwapCells(firstCellIndex, secondCellIndex);
+            if (isSwapped)
+            {
+                var cellMatchList = _matchController.GetCellMatchList();
 
-                if (firstCellData == secondCellData)
+                for (int i = 0; i < cellMatchList.Count; i++)
                 {
-                    Debug.Log("BoardModel: Can't swap! Reason: Same cell type");
-                    Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: True");
-                    return;
+                    cellMatchList[i].SetCellData(_cellEmptyData);
                 }
-            
-                var firstCellTempData = firstCell.GetCellData();
-                firstCell.SetCellData(secondCell.GetCellData());
-                secondCell.SetCellData(firstCellTempData);
-                secondCell.SetCellData(_cellEmptyData);
-            
-                UpdateBoardView();
                 
-                Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: True");
+                _matchController.ClearCellMatchList();
+                
+                UpdateBoardView();
+
+                _fallController.StartCellFallCoroutine();
             }
-            else
-            {
-                Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
-            }
-        }
-
-        private bool IsSwappable(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
-        {
-            if (firstCellIndex == secondCellIndex)
-            {
-                Debug.Log("BoardModel: Can't swap! Reason: Same cell index");
-                return false;
-            }
-
-            var horizontallySwappable = firstCellIndex.y != secondCellIndex.y;
-
-            var verticallySwappable = firstCellIndex.x != secondCellIndex.x;
-
-            if (horizontallySwappable && verticallySwappable)
-            {
-                Debug.Log($"BoardModel: Can't swap! Reason: Horizontally Swappable: {horizontallySwappable} + Vertically Swappable: {verticallySwappable} = false");
-                return false;
-            }
-
-            if (horizontallySwappable || verticallySwappable)
-            {
-                return true;
-            }
-
-            Debug.Log($"BoardModel: Can't swap! Reason: Horizontally Swappable: {horizontallySwappable} : Vertically Swappable: {verticallySwappable}");
-            return false;
         }
 
         private void UpdateBoardView()
@@ -124,6 +104,24 @@ namespace DefaultNamespace
                     m_Cells[rowNumber, cellNumber].UpdateView();
                 }
             }
+        }
+
+        private void FindMatchAfterFall()
+        {
+            _matchController.FindMatchAfterFall();
+            
+            var cellMatchList = _matchController.GetCellMatchList();
+
+            for (int i = 0; i < cellMatchList.Count; i++)
+            {
+                cellMatchList[i].SetCellData(_cellEmptyData);
+            }
+            
+            _matchController.ClearCellMatchList();
+            
+            UpdateBoardView();
+            
+            _fallController.StartCellFallCoroutine();
         }
     }
 }

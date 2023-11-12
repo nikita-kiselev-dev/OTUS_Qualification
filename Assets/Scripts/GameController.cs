@@ -12,15 +12,15 @@ namespace DefaultNamespace
         [SerializeField] private GameObject m_CellPrefab;
         [Space]
         [SerializeField] private RectTransform m_RowsContainer;
-        [SerializeField] private Canvas m_MainCanvas;
         [Space]
         [SerializeField] private List<CellData> m_CellDatas;
         [SerializeField] private CellData m_CellEmptyData;
         [SerializeField] private CellViewData m_CellViewData;
+        [Space, Header("Controllers"), Space]
+        [SerializeField] private FallController m_FallController;
 
         private List<RectTransform> _rows;
         private BoardModel _boardModel;
-        private CellController[,] m_Cells;
 
         private void Start()
         {
@@ -30,8 +30,8 @@ namespace DefaultNamespace
                 m_CellPrefab,
                 m_CellEmptyData,
                 m_CellViewData,
-                m_MainCanvas,
-                _rows);
+                _rows,
+                m_FallController);
             
             _boardModel.CreateCellMatrix(
                 m_RowsNumber,
