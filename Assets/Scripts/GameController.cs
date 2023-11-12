@@ -16,6 +16,8 @@ namespace DefaultNamespace
         [SerializeField] private List<CellData> m_CellDatas;
         [SerializeField] private CellData m_CellEmptyData;
         [SerializeField] private CellViewData m_CellViewData;
+        [Space, Header("Controllers"), Space]
+        [SerializeField] private FallController m_FallController;
 
         private List<RectTransform> _rows;
         private BoardModel _boardModel;
@@ -28,7 +30,8 @@ namespace DefaultNamespace
                 m_CellPrefab,
                 m_CellEmptyData,
                 m_CellViewData,
-                _rows);
+                _rows,
+                m_FallController);
             
             _boardModel.CreateCellMatrix(
                 m_RowsNumber,

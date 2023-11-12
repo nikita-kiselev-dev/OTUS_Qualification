@@ -36,6 +36,17 @@ namespace DefaultNamespace
             return false;
         }
 
+        public void FindMatchAfterFall()
+        {
+            for (int rowNumber = 0; rowNumber < _cells.GetLength(0); rowNumber++)
+            {
+                for (int cellNumber = 0; cellNumber < _cells.GetLength(1); cellNumber++)
+                {
+                    FindMatch(rowNumber, cellNumber);
+                }
+            }
+        }
+
         public List<CellController> GetCellMatchList()
         {
             return _cellMatchList;

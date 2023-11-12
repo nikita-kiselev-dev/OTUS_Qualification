@@ -14,17 +14,20 @@ namespace DefaultNamespace
 
         private SwapController _swapController;
         private MatchController _matchController;
+        private FallController _fallController;
 
         public BoardModel(
             GameObject cellPrefab,
             CellData cellEmptyData,
             CellViewData cellViewData,
-            List<RectTransform> rows)
+            List<RectTransform> rows,
+            FallController fallController)
         {
             _cellPrefab = cellPrefab;
             _cellEmptyData = cellEmptyData;
             _cellViewData = cellViewData;
             _rows = rows;
+            _fallController = fallController;
         }
         
         public void CreateCellMatrix(
@@ -63,6 +66,8 @@ namespace DefaultNamespace
             _matchController.Init();
             
             _swapController = new SwapController(m_Cells, _matchController);
+
+            _fallController.Init(m_Cells, _cellEmptyData, UpdateBoardView, FindMatchAfterFall);
         }
 
         public void SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
@@ -85,6 +90,8 @@ namespace DefaultNamespace
                 _matchController.ClearCellMatchList();
                 
                 UpdateBoardView();
+
+                _fallController.StartCellFallCoroutine();
             }
         }
 
@@ -97,6 +104,24 @@ namespace DefaultNamespace
                     m_Cells[rowNumber, cellNumber].UpdateView();
                 }
             }
+        }
+
+        private void FindMatchAfterFall()
+        {
+            _matchController.FindMatchAfterFall();
+            
+            var cellMatchList = _matchController.GetCellMatchList();
+
+            for (int i = 0; i < cellMatchList.Count; i++)
+            {
+                cellMatchList[i].SetCellData(_cellEmptyData);
+            }
+            
+            _matchController.ClearCellMatchList();
+            
+            UpdateBoardView();
+            
+            _fallController.StartCellFallCoroutine();
         }
     }
 }

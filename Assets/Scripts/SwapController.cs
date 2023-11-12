@@ -32,8 +32,10 @@ namespace DefaultNamespace
                 }
                 
                 DataSwap(firstCell, secondCell);
+                
                 var firstCellMatch = _matchController.FindMatch(firstCellIndex.x, firstCellIndex.y);
                 var secondCellMatch = _matchController.FindMatch(secondCellIndex.x, secondCellIndex.y);
+                
                 DataSwap(firstCell, secondCell);
 
                 if (!firstCellMatch && !secondCellMatch)
