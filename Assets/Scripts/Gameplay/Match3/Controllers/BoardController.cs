@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using Audio;
+using DefaultNamespace;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Gameplay.Match3.Controllers
 {
-    public class BoardModel
+    public class BoardController
     {
         private CellController[,] m_Cells;
 
@@ -16,7 +18,7 @@ namespace DefaultNamespace
         private MatchController _matchController;
         private FallController _fallController;
 
-        public BoardModel(
+        public BoardController(
             GameObject cellPrefab,
             CellData cellEmptyData,
             CellViewData cellViewData,
@@ -72,7 +74,7 @@ namespace DefaultNamespace
 
         public void SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
         {
-            if (m_Cells[firstCellIndex.x, firstCellIndex.y].GetCellData() == _cellEmptyData)
+            if (m_Cells[firstCellIndex.x, firstCellIndex.y].CompareCellData(_cellEmptyData))
             {
                 return;
             }
@@ -80,6 +82,8 @@ namespace DefaultNamespace
             bool isSwapped = _swapController.SwapCells(firstCellIndex, secondCellIndex);
             if (isSwapped)
             {
+                SoundController.Instance.PlaySound("TileSwap");
+                
                 var cellMatchList = _matchController.GetCellMatchList();
 
                 for (int i = 0; i < cellMatchList.Count; i++)
@@ -109,6 +113,7 @@ namespace DefaultNamespace
         private void FindMatchAfterFall()
         {
             bool needNewIteration = false;
+            SoundController.Instance.PlaySound("TileMatch");
             
             do
             {

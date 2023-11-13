@@ -1,8 +1,9 @@
 ﻿using System.Collections;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace DefaultNamespace
+namespace Gameplay.Match3.Controllers
 {
     public class FallController : MonoBehaviour
     {
@@ -50,7 +51,7 @@ namespace DefaultNamespace
                         
                         var currentCell = _cells[rowNumber, cellNumber];
 
-                        if (currentCell.GetCellData() == _cellEmptyData)
+                        if (currentCell.CompareCellData(_cellEmptyData))
                         {
                             continue;
                         }
@@ -85,7 +86,7 @@ namespace DefaultNamespace
 
         private bool IsBottomCellIsEmpty(int nextRowNumber, int cellNumber)
         {
-            var nextCellIsEmpty = _cells[nextRowNumber, cellNumber].GetCellData() == _cellEmptyData;
+            var nextCellIsEmpty = _cells[nextRowNumber, cellNumber].CompareCellData(_cellEmptyData);
             if (nextCellIsEmpty)
             {
                 return true;

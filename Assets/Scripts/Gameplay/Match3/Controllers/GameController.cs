@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using Unity.VisualScripting;
+using Audio;
+using DefaultNamespace;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Gameplay.Match3.Controllers
 {
     public class GameController : MonoBehaviour
     {
@@ -19,25 +20,32 @@ namespace DefaultNamespace
         [SerializeField] private CellViewData m_CellViewData;
         [Space, Header("Controllers"), Space]
         [SerializeField] private FallController m_FallController;
+        [SerializeField] private SoundController m_SoundController;
+        [SerializeField] private MusicController m_MusicController;
 
         private List<RectTransform> _rows;
-        private BoardModel _boardModel;
+        private BoardController _boardController;
 
         private void Start()
         {
             BuildBoard();
             
-            _boardModel = new BoardModel(
+            _boardController = new BoardController(
                 m_CellPrefab,
                 m_CellEmptyData,
                 m_CellViewData,
                 _rows,
                 m_FallController);
             
-            _boardModel.CreateCellMatrix(
+            _boardController.CreateCellMatrix(
                 m_RowsNumber,
                 m_CellsNumber,
                 m_CellDatas);
+            
+            m_SoundController.Init();
+            m_MusicController.Init();
+            
+            MusicController.Instance.PlaySoundLoop("Background");
         }
         
         public void BuildBoard()

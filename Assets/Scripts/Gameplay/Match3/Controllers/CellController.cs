@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using DefaultNamespace;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
-namespace DefaultNamespace
+namespace Gameplay.Match3.Controllers
 {
     public class CellController
     {
-        private readonly BoardModel _boardModel;
+        private readonly BoardController _boardController;
         private Vector2Int _cellIndex;
         private GameObject _cellPrefab;
         private CellData _cellData;
@@ -20,14 +21,14 @@ namespace DefaultNamespace
         private bool _isSelected;
 
         public CellController(
-            BoardModel boardModel,
+            BoardController boardController,
             Vector2Int cellIndex,
             GameObject cellPrefab,
             CellData cellData,
             CellViewData cellViewData,
             RectTransform parent)
         {
-            _boardModel = boardModel;
+            _boardController = boardController;
             _cellIndex = cellIndex;
             _cellPrefab = cellPrefab;
             _cellData = cellData;
@@ -58,7 +59,7 @@ namespace DefaultNamespace
             var eventDataGameObject = eventData.pointerCurrentRaycast.gameObject;
             if (eventDataGameObject.TryGetComponent(out CellView cellToSwap))
             {
-                _boardModel.SwapCells(cellToSwap.CellIndex, _cellView.CellIndex);
+                _boardController.SwapCells(cellToSwap.CellIndex, _cellView.CellIndex);
             }
         }
 
