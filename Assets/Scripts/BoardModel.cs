@@ -62,7 +62,7 @@ namespace DefaultNamespace
 
         private void CreateBoardControllers()
         {
-            _matchController = new MatchController(m_Cells);
+            _matchController = new MatchController(m_Cells, _cellEmptyData);
             _matchController.Init();
             
             _swapController = new SwapController(m_Cells, _matchController);
@@ -108,20 +108,31 @@ namespace DefaultNamespace
 
         private void FindMatchAfterFall()
         {
-            _matchController.FindMatchAfterFall();
+            bool needNewIteration = false;
             
-            var cellMatchList = _matchController.GetCellMatchList();
-
-            for (int i = 0; i < cellMatchList.Count; i++)
+            do
             {
-                cellMatchList[i].SetCellData(_cellEmptyData);
-            }
-            
-            _matchController.ClearCellMatchList();
-            
-            UpdateBoardView();
-            
-            _fallController.StartCellFallCoroutine();
+                _matchController.FindMatchAfterFall();
+                
+                var cellMatchList = _matchController.GetCellMatchList();
+                for (int i = 0; i < cellMatchList.Count; i++)
+                {
+                    cellMatchList[i].SetCellData(_cellEmptyData);
+                }
+
+                if (cellMatchList.Count > 0)
+                {
+                    _fallController.StartCellFallCoroutine();
+                    needNewIteration = true;
+                }
+                else
+                {
+                    needNewIteration = false;
+                }
+                _matchController.ClearCellMatchList();
+                
+            } while (needNewIteration);
+
         }
     }
 }

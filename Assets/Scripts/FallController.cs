@@ -6,7 +6,7 @@ namespace DefaultNamespace
 {
     public class FallController : MonoBehaviour
     {
-        private const float fallInterval = 0.1f;
+        private const float fallInterval = 0.06f;
         
         private CellController[,] _cells;
         private CellData _cellEmptyData;
@@ -48,9 +48,15 @@ namespace DefaultNamespace
                             needNewIteration = false;
                         }
                         
+                        var currentCell = _cells[rowNumber, cellNumber];
+
+                        if (currentCell.GetCellData() == _cellEmptyData)
+                        {
+                            continue;
+                        }
+                        
                         if (IsBottomCellIsEmpty(nextRowNumber, cellNumber))
                         { 
-                            var currentCell = _cells[rowNumber, cellNumber];
                             var bottomCell = _cells[nextRowNumber, cellNumber];
                         
                             bottomCell.SetCellData(currentCell.GetCellData());
@@ -62,13 +68,14 @@ namespace DefaultNamespace
                             needFallAnimation = true;
                         }
                     }
-
-                    if (needFallAnimation)
-                    {
-                        needFallAnimation = false;
-                        yield return new WaitForSeconds(fallInterval);
-                    }
                 }
+                
+                if (needFallAnimation)
+                {
+                    needFallAnimation = false;
+                    yield return new WaitForSeconds(fallInterval);
+                }
+                
             } 
             while (needNewIteration);
             

@@ -6,6 +6,7 @@ namespace DefaultNamespace
     public class MatchController
     {
         private CellController[,] _cells;
+        private CellData _cellEmptyData;
         
         private List<CellController> _cellMatchList;
         private List<CellController> _horizontalCellMatchList;
@@ -13,9 +14,10 @@ namespace DefaultNamespace
         
         private const int MinCellsToMatch = 3;
 
-        public MatchController(CellController[,] cells)
+        public MatchController(CellController[,] cells, CellData cellEmptyData)
         {
             _cells = cells;
+            _cellEmptyData = cellEmptyData;
         }
 
         public void Init()
@@ -60,6 +62,11 @@ namespace DefaultNamespace
         public bool IsMatch(int rowNumber, int cellNumber)
         {
             var currentCellController = _cells[rowNumber, cellNumber];
+
+            if (currentCellController.CompareCellData(_cellEmptyData))
+            {
+                return false;
+            }
             
             _horizontalCellMatchList.Add(_cells[rowNumber, cellNumber]);
             _verticalCellMatchList.Add(_cells[rowNumber, cellNumber]);
