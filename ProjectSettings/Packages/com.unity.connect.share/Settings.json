@@ -19,7 +19,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "buildOutputDirList",
-                "value": "{\"m_Value\":\"C:/Users/Nikita/Documents/MyDocuments/Development/Unity/OTUS_Qualification/WebGL Builds/0.0.1_b0;;;;;;;;;\"}"
+                "value": "{\"m_Value\":\"C:/Users/Nikita/Documents/MyDocuments/Development/Unity/OTUS_Qualification/WebGL Builds/0.0.1_b1;C:/Users/Nikita/Documents/MyDocuments/Development/Unity/OTUS_Qualification/WebGL Builds/0.0.1_b0;;;;;;;;\"}"
             }
         ]
     }
