@@ -2,9 +2,9 @@
 {
     public class MusicController : AudioController
     {
-        public static MusicController Instance;
+        public static MusicController Instance { get; private set; }
         
-        public void Init()
+        public void Awake()
         {
             if (Instance == null) 
             {

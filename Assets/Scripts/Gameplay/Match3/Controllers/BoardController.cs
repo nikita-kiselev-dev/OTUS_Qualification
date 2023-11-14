@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using Audio;
 using DefaultNamespace;
+using DefaultNamespace.Other;
+using Other.Controllers;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Gameplay.Match3.Controllers
 {
@@ -17,19 +20,34 @@ namespace Gameplay.Match3.Controllers
         private SwapController _swapController;
         private MatchController _matchController;
         private FallController _fallController;
+        
+        private ScoreController _scoreController;
+        private WinConditionController _winConditionController;
 
+        private CoreMenuController _coreMenuController;
+
+        private WinPopupController _winPopupController;
+        
         public BoardController(
             GameObject cellPrefab,
             CellData cellEmptyData,
             CellViewData cellViewData,
             List<RectTransform> rows,
-            FallController fallController)
+            FallController fallController,
+            ScoreController scoreController,
+            WinConditionController winConditionController,
+            CoreMenuController coreMenuController,
+            WinPopupController winPopupController)
         {
             _cellPrefab = cellPrefab;
             _cellEmptyData = cellEmptyData;
             _cellViewData = cellViewData;
             _rows = rows;
             _fallController = fallController;
+            _scoreController = scoreController;
+            _winConditionController = winConditionController;
+            _coreMenuController = coreMenuController;
+            _winPopupController = winPopupController;
         }
         
         public void CreateCellMatrix(
@@ -82,13 +100,25 @@ namespace Gameplay.Match3.Controllers
             bool isSwapped = _swapController.SwapCells(firstCellIndex, secondCellIndex);
             if (isSwapped)
             {
-                SoundController.Instance.PlaySound("TileSwap");
+                SoundController.Instance.PlaySound(SoundList.TileSwap);
                 
                 var cellMatchList = _matchController.GetCellMatchList();
 
                 for (int i = 0; i < cellMatchList.Count; i++)
                 {
+                    _scoreController.AddScore(); 
+                    
+                    _coreMenuController.SetScoreText(_scoreController.Score);
+                    _coreMenuController.SetSliderValue(_scoreController.Score);
+                    
                     cellMatchList[i].SetCellData(_cellEmptyData);
+                }
+                
+                var isWin = _winConditionController.IsLevelWin(_scoreController.Score);
+
+                if (isWin)
+                {
+                    _winPopupController.Open();
                 }
                 
                 _matchController.ClearCellMatchList();
@@ -112,9 +142,9 @@ namespace Gameplay.Match3.Controllers
 
         private void FindMatchAfterFall()
         {
-            bool needNewIteration = false;
-            SoundController.Instance.PlaySound("TileMatch");
+            SoundController.Instance.PlaySound(SoundList.TileMatch);
             
+            bool needNewIteration;
             do
             {
                 _matchController.FindMatchAfterFall();
@@ -122,7 +152,18 @@ namespace Gameplay.Match3.Controllers
                 var cellMatchList = _matchController.GetCellMatchList();
                 for (int i = 0; i < cellMatchList.Count; i++)
                 {
+                    _scoreController.AddScore();
+                    _coreMenuController.SetScoreText(_scoreController.Score);
+                    _coreMenuController.SetSliderValue(_scoreController.Score);
+                    
                     cellMatchList[i].SetCellData(_cellEmptyData);
+                }
+                
+                var isWin = _winConditionController.IsLevelWin(_scoreController.Score);
+
+                if (isWin)
+                {
+                    _winPopupController.Open();
                 }
 
                 if (cellMatchList.Count > 0)

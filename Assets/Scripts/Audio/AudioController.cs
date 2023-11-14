@@ -18,10 +18,15 @@ namespace Audio
     
         public void PlaySoundLoop(string clipName)
         {
-            m_AudioSource.loop = true;
             var audioClip = GetAudioClip(clipName);
             m_AudioSource.clip = audioClip;
+            m_AudioSource.loop = true;
             m_AudioSource.Play();
+        }
+
+        public bool IsPlaying()
+        {
+            return m_AudioSource.isPlaying;
         }
         
         private AudioClip GetAudioClip(string clipName)

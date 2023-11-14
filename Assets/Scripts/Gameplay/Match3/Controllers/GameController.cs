@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Audio;
 using DefaultNamespace;
+using DefaultNamespace.Other;
+using Other.Controllers;
 using UnityEngine;
 
 namespace Gameplay.Match3.Controllers
@@ -18,16 +19,31 @@ namespace Gameplay.Match3.Controllers
         [SerializeField] private List<CellData> m_CellDatas;
         [SerializeField] private CellData m_CellEmptyData;
         [SerializeField] private CellViewData m_CellViewData;
-        [Space, Header("Controllers"), Space]
+        
+        [Space, Header("Game Controllers"), Space]
         [SerializeField] private FallController m_FallController;
-        [SerializeField] private SoundController m_SoundController;
-        [SerializeField] private MusicController m_MusicController;
+        
+        [Space, Header("UI Controllers"), Space]
+        [SerializeField] private CoreMenuController m_CoreMenuController;
+
+        [Space, Header("Popup Controllers"), Space]
+        [SerializeField] private WinPopupController m_WinPopupController;
 
         private List<RectTransform> _rows;
         private BoardController _boardController;
+        private ScoreController _scoreController;
+        private WinConditionController _winConditionController;
+
+        private const int _scoreGoal = 20;
 
         private void Start()
         {
+            _scoreController = new ScoreController();
+            m_CoreMenuController.SetSliderMaxValue(_scoreGoal);
+
+            _winConditionController = new WinConditionController();
+            _winConditionController.SetScoreGoal(_scoreGoal);
+            
             BuildBoard();
             
             _boardController = new BoardController(
@@ -35,17 +51,17 @@ namespace Gameplay.Match3.Controllers
                 m_CellEmptyData,
                 m_CellViewData,
                 _rows,
-                m_FallController);
+                m_FallController,
+                _scoreController,
+                _winConditionController,
+                m_CoreMenuController,
+                m_WinPopupController);
             
             _boardController.CreateCellMatrix(
                 m_RowsNumber,
                 m_CellsNumber,
                 m_CellDatas);
-            
-            m_SoundController.Init();
-            m_MusicController.Init();
-            
-            MusicController.Instance.PlaySoundLoop("Background");
+
         }
         
         public void BuildBoard()
