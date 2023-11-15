@@ -8,6 +8,8 @@ namespace Audio
     {
         [SerializeField] private protected AudioSource m_AudioSource;
         [SerializeField] private protected List<AudioData> m_AudioData = new List<AudioData>();
+
+        public float Volume => m_AudioSource.volume;
         
         public void PlaySound(string clipName)
         {
@@ -29,9 +31,9 @@ namespace Audio
             return m_AudioSource.isPlaying;
         }
 
-        public string GetCurrentSoundName()
+        public void SetVolumeValue(float volumeValue)
         {
-            return m_AudioSource.clip.name;
+            m_AudioSource.volume = volumeValue;
         }
         
         private AudioClip GetAudioClip(string clipName)
