@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Audio;
 using DefaultNamespace;
+using DefaultNamespace.Other;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Gameplay.Match3.Controllers
@@ -10,12 +12,12 @@ namespace Gameplay.Match3.Controllers
         private CellController[,] _cells;
         private CellData _cellEmptyData;
         
-        private List<CellController> _cellMatchList;
-        private List<CellController> _horizontalCellMatchList;
-        private List<CellController> _verticalCellMatchList;
+        private HashSet<CellController> _cellMatchList;
+        private HashSet<CellController> _horizontalCellMatchList;
+        private HashSet<CellController> _verticalCellMatchList;
         
         private const int MinCellsToMatch = 3;
-
+        
         public MatchController(CellController[,] cells, CellData cellEmptyData)
         {
             _cells = cells;
@@ -24,34 +26,40 @@ namespace Gameplay.Match3.Controllers
 
         public void Init()
         {
-            _cellMatchList = new List<CellController>();
-            _horizontalCellMatchList = new List<CellController>();
-            _verticalCellMatchList = new List<CellController>();
+            _cellMatchList = new HashSet<CellController>();
+            _horizontalCellMatchList = new HashSet<CellController>();
+            _verticalCellMatchList = new HashSet<CellController>();
         }
 
         public bool FindMatch(int rowNumber, int cellNumber)
         {
             if (IsMatch(rowNumber, cellNumber))
             {
-                Debug.Log("Match!");
+                SoundController.Instance.PlaySound(SoundList.TileMatch);
                 return true;
             }
 
             return false;
         }
 
-        public void FindMatchAfterFall()
+        public bool FindMatchAfterFall()
         {
+            bool needIteration = false;
             for (int rowNumber = 0; rowNumber < _cells.GetLength(0); rowNumber++)
             {
                 for (int cellNumber = 0; cellNumber < _cells.GetLength(1); cellNumber++)
                 {
-                    FindMatch(rowNumber, cellNumber);
+                    if (!needIteration)
+                    {
+                        needIteration = FindMatch(rowNumber, cellNumber);
+                    }
                 }
             }
+
+            return needIteration;
         }
 
-        public List<CellController> GetCellMatchList()
+        public HashSet<CellController> GetCellMatchList()
         {
             return _cellMatchList;
         }
@@ -72,11 +80,19 @@ namespace Gameplay.Match3.Controllers
             
             _horizontalCellMatchList.Add(_cells[rowNumber, cellNumber]);
             _verticalCellMatchList.Add(_cells[rowNumber, cellNumber]);
+            
             bool horizontalMatch = IsHorizontalMatch(currentCellController, rowNumber, cellNumber);
             bool verticalMatch = IsVerticalMatch(currentCellController, rowNumber, cellNumber);
 
-            _cellMatchList.AddRange(_horizontalCellMatchList);
-            _cellMatchList.AddRange(_verticalCellMatchList);
+            if (horizontalMatch)
+            {
+                _cellMatchList.AddRange(_horizontalCellMatchList);
+            }
+
+            if (verticalMatch)
+            {
+                _cellMatchList.AddRange(_verticalCellMatchList);
+            }
             
             _horizontalCellMatchList.Clear();
             _verticalCellMatchList.Clear();
@@ -91,7 +107,7 @@ namespace Gameplay.Match3.Controllers
         {
             for (int i = cellNumber - 1; i >= 0; i--)
             {
-                var nextCellData = _cells[rowNumber, i].GetCellData();
+                var nextCellData = _cells[rowNumber, i].CellData;
                 var nextCellController = _cells[rowNumber, i];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
@@ -105,7 +121,7 @@ namespace Gameplay.Match3.Controllers
             
             for (int i = cellNumber + 1; i < _cells.GetLength(1); i++)
             {
-                var nextCellData = _cells[rowNumber, i].GetCellData();
+                var nextCellData = _cells[rowNumber, i].CellData;
                 var nextCellController = _cells[rowNumber, i];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
@@ -133,7 +149,7 @@ namespace Gameplay.Match3.Controllers
         {
             for (int i = rowNumber - 1; i >= 0; i--)
             {
-                var nextCellData = _cells[i, cellNumber].GetCellData();
+                var nextCellData = _cells[i, cellNumber].CellData;
                 var nextCellController = _cells[i, cellNumber];
                 if (currentCellController.CompareCellData(nextCellData))
                 {
@@ -147,7 +163,7 @@ namespace Gameplay.Match3.Controllers
             
             for (int i = rowNumber + 1; i < _cells.GetLength(0); i++)
             {
-                var nextCellData = _cells[i, cellNumber].GetCellData();
+                var nextCellData = _cells[i, cellNumber].CellData;
                 var nextCellController = _cells[i, cellNumber];
                 if (currentCellController.CompareCellData(nextCellData))
                 {

@@ -7,7 +7,9 @@ namespace Gameplay.Match3.Controllers
 {
     public class FallController : MonoBehaviour
     {
-        private const float fallInterval = 0.06f;
+        private const float _fallInterval = 0.06f;
+        //private const float _fallInterval = 0.3f;
+
         
         private CellController[,] _cells;
         private CellData _cellEmptyData;
@@ -60,7 +62,7 @@ namespace Gameplay.Match3.Controllers
                         { 
                             var bottomCell = _cells[nextRowNumber, cellNumber];
                         
-                            bottomCell.SetCellData(currentCell.GetCellData());
+                            bottomCell.SetCellData(currentCell.CellData);
                             currentCell.SetCellData(_cellEmptyData);
                             
                             _updateBoardView?.Invoke();
@@ -74,9 +76,8 @@ namespace Gameplay.Match3.Controllers
                 if (needFallAnimation)
                 {
                     needFallAnimation = false;
-                    yield return new WaitForSeconds(fallInterval);
+                    yield return new WaitForSeconds(_fallInterval);
                 }
-                
             } 
             while (needNewIteration);
             
