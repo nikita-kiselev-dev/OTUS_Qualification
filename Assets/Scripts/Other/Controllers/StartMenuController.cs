@@ -7,11 +7,15 @@ namespace Other.Controllers
 {
     public class StartMenuController : MonoBehaviour
     {
+        [Space, Header("Controllers"), Space]
+        [SerializeField] private SettingsPopupController m_SettingsPopupController;
+        
+        [Space, Header("Views"), Space]
         [SerializeField] private StartMenuView m_StartMenuView;
         
         private void Awake()
         {
-            m_StartMenuView.Init(StartCoreGame, OpenSettings);
+            m_StartMenuView.Init(StartCoreGame, OpenSettings, ExitGame);
         }
 
         private void Start()
@@ -29,6 +33,12 @@ namespace Other.Controllers
 
         private void OpenSettings()
         {
+            m_SettingsPopupController.Open();
+        }
+
+        private void ExitGame()
+        {
+            Application.Quit();
         }
     }
 }
