@@ -20,13 +20,18 @@ namespace Gameplay.Match3.Controllers
 
         private bool _isSelected;
 
+        private CellData _cellEmptyData;
+
+        public CellData CellData => _cellData;
+
         public CellController(
             BoardController boardController,
             Vector2Int cellIndex,
             GameObject cellPrefab,
             CellData cellData,
             CellViewData cellViewData,
-            RectTransform parent)
+            RectTransform parent,
+            CellData cellEmptyData)
         {
             _boardController = boardController;
             _cellIndex = cellIndex;
@@ -34,6 +39,7 @@ namespace Gameplay.Match3.Controllers
             _cellData = cellData;
             _cellViewData = cellViewData;
             _parent = parent;
+            _cellEmptyData = cellEmptyData;
         }
 
         public void Init()
@@ -49,17 +55,23 @@ namespace Gameplay.Match3.Controllers
 
         public void OnBeginDrag()
         {
-            _cellView.SetBackground(_cellViewData.SelectedBackgroundSprite);
+            if (!CompareCellData(_cellEmptyData))
+            {
+                _cellView.SetBackground(_cellViewData.SelectedBackgroundSprite);
+            }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            _cellView.SetBackground(_cellViewData.DelesectedBackGroundSprite);
-
-            var eventDataGameObject = eventData.pointerCurrentRaycast.gameObject;
-            if (eventDataGameObject.TryGetComponent(out CellView cellToSwap))
+            if (!CompareCellData(_cellEmptyData))
             {
-                _boardController.SwapCells(cellToSwap.CellIndex, _cellView.CellIndex);
+                _cellView.SetBackground(_cellViewData.DelesectedBackGroundSprite);
+
+                var eventDataGameObject = eventData.pointerCurrentRaycast.gameObject;
+                if (eventDataGameObject.TryGetComponent(out CellView cellToSwap))
+                {
+                    _boardController.SwapCells(cellToSwap.CellIndex, _cellView.CellIndex);
+                }
             }
         }
 
@@ -68,14 +80,9 @@ namespace Gameplay.Match3.Controllers
             _cellData = cellData;
         }
 
-        public CellData GetCellData()
-        {
-            return _cellData;
-        }
-
         public bool CompareCellData(CellData cellData)
         {
-            var isSameCellData = cellData == GetCellData();
+            var isSameCellData = cellData.Equals(CellData);
             return isSameCellData;
         }
 

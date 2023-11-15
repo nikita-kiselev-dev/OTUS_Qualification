@@ -28,6 +28,11 @@ namespace Audio
         {
             return m_AudioSource.isPlaying;
         }
+
+        public string GetCurrentSoundName()
+        {
+            return m_AudioSource.clip.name;
+        }
         
         private AudioClip GetAudioClip(string clipName)
         {

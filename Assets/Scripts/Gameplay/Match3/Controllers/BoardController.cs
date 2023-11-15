@@ -4,7 +4,6 @@ using DefaultNamespace;
 using DefaultNamespace.Other;
 using Other.Controllers;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Gameplay.Match3.Controllers
 {
@@ -69,7 +68,8 @@ namespace Gameplay.Match3.Controllers
                         _cellPrefab,
                         randomCellData,
                         _cellViewData,
-                        _rows[rowNumber]);
+                        _rows[rowNumber],
+                        _cellEmptyData);
                     
                     CellConfig cellConfig = new CellConfig($"Cell [{rowNumber}, {cellNumber}]");
                     m_Cells[rowNumber,cellNumber].UpdateCell(cellConfig);
@@ -92,7 +92,10 @@ namespace Gameplay.Match3.Controllers
 
         public void SwapCells(Vector2Int firstCellIndex, Vector2Int secondCellIndex)
         {
-            if (m_Cells[firstCellIndex.x, firstCellIndex.y].CompareCellData(_cellEmptyData))
+            var firstCellIsEmpty = m_Cells[firstCellIndex.x, firstCellIndex.y].CompareCellData(_cellEmptyData);
+            var secondCellIsEmpty = m_Cells[secondCellIndex.x, secondCellIndex.y].CompareCellData(_cellEmptyData);
+            
+            if (firstCellIsEmpty || secondCellIsEmpty)
             {
                 return;
             }
@@ -102,26 +105,7 @@ namespace Gameplay.Match3.Controllers
             {
                 SoundController.Instance.PlaySound(SoundList.TileSwap);
                 
-                var cellMatchList = _matchController.GetCellMatchList();
-
-                for (int i = 0; i < cellMatchList.Count; i++)
-                {
-                    _scoreController.AddScore(); 
-                    
-                    _coreMenuController.SetScoreText(_scoreController.Score);
-                    _coreMenuController.SetSliderValue(_scoreController.Score);
-                    
-                    cellMatchList[i].SetCellData(_cellEmptyData);
-                }
-                
-                var isWin = _winConditionController.IsLevelWin(_scoreController.Score);
-
-                if (isWin)
-                {
-                    _winPopupController.Open();
-                }
-                
-                _matchController.ClearCellMatchList();
+                SetScore();
                 
                 UpdateBoardView();
 
@@ -142,43 +126,47 @@ namespace Gameplay.Match3.Controllers
 
         private void FindMatchAfterFall()
         {
-            SoundController.Instance.PlaySound(SoundList.TileMatch);
-            
             bool needNewIteration;
             do
             {
-                _matchController.FindMatchAfterFall();
+                needNewIteration = _matchController.FindMatchAfterFall();
                 
-                var cellMatchList = _matchController.GetCellMatchList();
-                for (int i = 0; i < cellMatchList.Count; i++)
-                {
-                    _scoreController.AddScore();
-                    _coreMenuController.SetScoreText(_scoreController.Score);
-                    _coreMenuController.SetSliderValue(_scoreController.Score);
-                    
-                    cellMatchList[i].SetCellData(_cellEmptyData);
-                }
+                SetScore();
                 
-                var isWin = _winConditionController.IsLevelWin(_scoreController.Score);
-
-                if (isWin)
-                {
-                    _winPopupController.Open();
-                }
-
-                if (cellMatchList.Count > 0)
+                if (needNewIteration)
                 {
                     _fallController.StartCellFallCoroutine();
-                    needNewIteration = true;
                 }
-                else
-                {
-                    needNewIteration = false;
-                }
-                _matchController.ClearCellMatchList();
-                
-            } while (needNewIteration);
 
+            } while (needNewIteration);
+        }
+
+        private void SetScore()
+        {
+            var cellMatchList = _matchController.GetCellMatchList();
+            
+            if (0 >= cellMatchList.Count)
+            {
+                return;
+            }
+            
+            foreach (var currentCell in cellMatchList)
+            {
+                _scoreController.AddScore();
+                _coreMenuController.SetScoreText(_scoreController.Score);
+                _coreMenuController.SetSliderValue(_scoreController.Score);
+                    
+                currentCell.SetCellData(_cellEmptyData);
+            }
+            
+            _matchController.ClearCellMatchList();
+                
+            var isWin = _winConditionController.IsLevelWin(_scoreController.Score);
+
+            if (isWin)
+            {
+                _winPopupController.Open();
+            }
         }
     }
 }

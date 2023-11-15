@@ -18,15 +18,13 @@ namespace Gameplay.Match3.Controllers
             if (IsSwappable(firstCellIndex, secondCellIndex))
             {
                 var firstCell = _cells[firstCellIndex.x, firstCellIndex.y];
-                var firstCellData = firstCell.GetCellData();
+                var firstCellData = firstCell.CellData;
             
                 var secondCell = _cells[secondCellIndex.x, secondCellIndex.y];
-                var secondCellData = secondCell.GetCellData();
+                var secondCellData = secondCell.CellData;
 
                 if (firstCellData == secondCellData)
                 {
-                    Debug.Log("BoardModel: Can't swap! Reason: Same cell type");
-                    Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
                     return false;
                 }
                 
@@ -39,19 +37,13 @@ namespace Gameplay.Match3.Controllers
 
                 if (!firstCellMatch && !secondCellMatch)
                 {
-                    Debug.Log("BoardModel: Can't swap! Reason: No match found");
-                    Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
                     return false;
                 }
                 
                 DataSwap(firstCell, secondCell);
 
-                Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: True");
-
                 return true;
             }
-            
-            Debug.Log($"BoardModel: First Cell {firstCellIndex} : Second Cell {secondCellIndex}. Swap result: False");
             return false;
         }
 
@@ -59,7 +51,6 @@ namespace Gameplay.Match3.Controllers
         {
             if (firstCellIndex == secondCellIndex)
             {
-                Debug.Log("BoardModel: Can't swap! Reason: Same cell index");
                 return false;
             }
 
@@ -69,7 +60,6 @@ namespace Gameplay.Match3.Controllers
 
             if (horizontallySwappable && verticallySwappable)
             {
-                Debug.Log($"BoardModel: Can't swap! Reason: Horizontally Swappable: {horizontallySwappable} + Vertically Swappable: {verticallySwappable} = False");
                 return false;
             }
 
@@ -77,16 +67,14 @@ namespace Gameplay.Match3.Controllers
             {
                 return true;
             }
-
-            Debug.Log($"BoardModel: Can't swap! Reason: Horizontally Swappable: {horizontallySwappable} : Vertically Swappable: {verticallySwappable}");
             
             return false;
         }
 
         private void DataSwap(CellController firstCell, CellController secondCell)
         {
-            var firstCellTempData = firstCell.GetCellData();
-            firstCell.SetCellData(secondCell.GetCellData());
+            var firstCellTempData = firstCell.CellData;
+            firstCell.SetCellData(secondCell.CellData);
             secondCell.SetCellData(firstCellTempData);
         }
     }

@@ -34,7 +34,7 @@ namespace Gameplay.Match3.Controllers
         private ScoreController _scoreController;
         private WinConditionController _winConditionController;
 
-        private const int _scoreGoal = 20;
+        private const int _scoreGoal = 45;
 
         private void Start()
         {
